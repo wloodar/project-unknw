@@ -1,11 +1,18 @@
-import { Controller, Request, Post, UseGuards, Get } from '@nestjs/common';
+import { Controller, Request, Post, UseGuards, Get, UsePipes, ValidationPipe, Body } from '@nestjs/common';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { AuthService } from './auth.service';
 import { Public } from './auth.decorator';
+import { CreateUserDto } from '../users/dto/create-user.dto';
 
 @Controller('auth')
 export class AuthController {
     constructor(private authService: AuthService) {}
+
+    @Public()
+    @Post('register')
+    async register(@Body(ValidationPipe) userSignup: CreateUserDto) {
+        return this.authService.register(userSignup);
+    }
 
     @Public()
     @UseGuards(LocalAuthGuard)
@@ -14,32 +21,3 @@ export class AuthController {
         return this.authService.login(req.user);
     } 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    // constructor(private authService: AuthService) {}
-
-    // @Get()
-    // findAll() {
-    //     return this.authService.display(process.env.MONGODB_PASS);
-    // }
