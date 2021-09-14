@@ -39,7 +39,7 @@ export class UsersService {
     }
 
     async findOne(email: string): Promise<User | undefined> {
-        return this.userModel.findOne({ email: email }).exec();
+        return this.userModel.findOne({ email: email });
     }
 
 }
