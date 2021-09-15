@@ -13,7 +13,6 @@ export class UsersService {
     ) {}
     
     async createUser(userSignup: CreateUserDto): Promise<Object> {
-        
         const findUser = await this.findOne(userSignup.email);
 
         if (findUser) {

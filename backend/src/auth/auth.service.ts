@@ -13,7 +13,7 @@ export class AuthService {
     async validateUser(email: string, pass: string): Promise<any> {
         const user = await this.usersService.findOne(email);          
 
-        if (user && this.comparePassword(pass, user.password)) {
+        if (user && this.comparePassword(pass, user)) {
             const { password, ...result } = user;
             return result;
         }
@@ -36,7 +36,7 @@ export class AuthService {
         return await bcrypt.hash(pass, salt);
     }
 
-    private async comparePassword(providedPassword: string, user) {
+    private async comparePassword(providedPassword: string, user) {   
         const isMatch = await bcrypt.compare(providedPassword, user.password);
 
         if (!isMatch) {
