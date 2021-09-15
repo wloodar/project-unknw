@@ -1,12 +1,12 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, Types } from 'mongoose';
+import { Document, Schema as MongooseSchema } from 'mongoose';
 
 export type RefreshTokenDocument = RefreshToken & Document;
 
-@Schema({ collection: 'refreshToken' })
+@Schema({ collection: 'refreshToken', toJSON: { virtuals: true, getters: true } })
 export class RefreshToken {
-    @Prop({ type: Types.ObjectId, ref: 'users' })
-    user: Types.ObjectId
+    @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'users' })
+    user: MongooseSchema.Types.ObjectId
 
     @Prop()
     token: string
@@ -28,14 +28,20 @@ export class RefreshToken {
 
     @Prop()
     replacedByToken: string
+
+    isExpired: boolean
+    
+    isActive: boolean
 }
 
-export const RefreshTokenSchema = SchemaFactory.createForClass(RefreshToken);
-
-RefreshTokenSchema.virtual('isExpired').get(function() {
-    return new Date() >= this.expires;
+const RefreshTokenSchema = SchemaFactory.createForClass(RefreshToken);
+ 
+RefreshTokenSchema.virtual('isExpired').get(function (this: RefreshTokenDocument) {
+    return new Date() >= this.expires
 });
-
-RefreshTokenSchema.virtual('isActive').get(function () {
+ 
+RefreshTokenSchema.virtual('isActive').get(function (this: RefreshTokenDocument) {
     return !this.revoked && !this.isExpired;
 });
+
+export { RefreshTokenSchema };

@@ -7,7 +7,9 @@ import { LocalStrategy } from './strategies/local.strategy';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule } from '@nestjs/config';
 import { JwtStrategy } from './strategies/jwt.strategy';
-
+import { MongooseModule } from '@nestjs/mongoose';
+import { RefreshToken, RefreshTokenSchema } from '../schemas/refreshToken.schema';
+import { User, UserSchema } from '../schemas/user.schema';
 
 @Module({
     imports: [
@@ -18,6 +20,8 @@ import { JwtStrategy } from './strategies/jwt.strategy';
             secret: process.env.JWT_SECRET,
             signOptions: { expiresIn: '60s' },
         }),
+        MongooseModule.forFeature([{ name: RefreshToken.name, schema: RefreshTokenSchema }]),
+        MongooseModule.forFeature([{ name: User.name, schema: UserSchema }])
     ],
     controllers: [AuthController],
     exports: [AuthService],
