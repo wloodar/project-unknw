@@ -61,14 +61,15 @@ export class AuthService {
         // Save refresh token in database
         await refreshToken.save();
 
+        // Generate user access token
         const accessToken = await this.userAccessToken(user);
+
         return {
             access_token: accessToken,
             refresh_token: refreshToken.token
         }
     }
 
-    // TODO: Check if token exists
     async updateRefreshToken(currentRefreshToken) {
 
         if (currentRefreshToken === undefined) {
@@ -102,6 +103,10 @@ export class AuthService {
             access_token: jwtToken,
             refresh_token: newRefreshToken.token
         }
+    }
+
+    async revokeToken(token) {
+        return true;
     }
 
     // Methods - - - - - -  Methods - - - - - -  Methods - - - - - -  Methods - - - - - -  Methods - - - - - - 

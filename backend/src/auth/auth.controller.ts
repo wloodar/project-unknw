@@ -40,6 +40,11 @@ export class AuthController {
         }
     }
 
+    @Post('revoke-token')
+    async revokeToken(@Request() req) {
+        return this.authService.revokeToken("A");
+    }
+
     setTokenCookie(res, refreshToken) {
         res.cookie("refreshtoken", refreshToken, {
             expiresIn: "30d",
