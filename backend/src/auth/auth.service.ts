@@ -106,6 +106,22 @@ export class AuthService {
     }
 
     async revokeToken(token) {
+        
+        if (token === undefined) {
+            throw new UnauthorizedException("Unauthorized refresh token action");
+        } 
+
+        // Retreive refresh token from database
+        const refreshToken = await this.getRefreshToken(token);
+
+        // Change values of revoking token
+        refreshToken.revoked = new Date();
+        refreshToken.revokedByIp = "";
+
+        // Save updated data of revoking token 
+        await refreshToken.save();
+
+        // Success of revoking token, return true and set cookie to null
         return true;
     }
 

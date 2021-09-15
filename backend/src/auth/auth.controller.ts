@@ -40,9 +40,21 @@ export class AuthController {
         }
     }
 
+    @Public()
     @Post('revoke-token')
-    async revokeToken(@Request() req) {
-        return this.authService.revokeToken("A");
+    async revokeToken(@Request() req, @Res({ passthrough: true }) res) {
+        const revoked = await this.authService.revokeToken(req.cookies.refreshtoken);
+
+        if (revoked) {
+            res.cookie('refreshtoken', {
+                maxAge: 0,
+                overwrite: true, 
+            })
+        }
+
+        return {
+            message: "Token revoked"
+        }
     }
 
     setTokenCookie(res, refreshToken) {
