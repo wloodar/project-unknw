@@ -1,0 +1,128 @@
+*,
+*::after,
+*::before {
+    margin: 0;
+    padding: 0;
+    box-sizing: inherit;
+    -webkit-appearance: none !important;
+    -moz-appearance: none;
+    appearance: none;
+}
+
+html {
+    font-size: 62.5%;
+    // background: $col_lightgray;
+
+    @include respond(phone) {
+        font-size: 50%;
+    }
+    @include respond(tab-port) {
+        font-size: 50%;
+    }
+    @include respond(tab-land) {
+        font-size: 60%;
+    }
+
+    font-family: $font-primary;
+}
+
+/* Space out content a bit */
+body {
+    font-size: 1.5rem;
+    font-family: $font-primary;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+    outline: 0;
+    text-decoration: none;
+    color: inherit;
+}
+
+button {
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+}
+
+input, button, select, textarea {
+    outline: 0;
+    font-family: $font-primary;
+}
+
+input {
+    font-family: $font-primary;
+    // font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    font-weight: 500;
+}
+
+$input: #ccc;
+::-webkit-input-placeholder { /* Chrome/Opera/Safari */
+    color: $input;
+}
+
+::-moz-placeholder { /* Firefox 19+ */
+    color: $input;
+}
+
+:-ms-input-placeholder { /* IE 10+ */
+    color: $input;
+}
+
+:-moz-placeholder { /* Firefox 18- */
+    color: $input;
+}
+
+ul {
+    list-style-type: none;
+}
+
+img {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.disable-css-transitions {
+    -webkit-transition: none !important;
+    -moz-transition: none !important;
+    -o-transition: none !important;
+    transition: none !important;
+}
+
+:root {
+    --aside-width: 25rem;
+
+    --border-primary: #f3f3f3;
+    --border-primary-dark: #d6d6d6;
+
+    --color-reject: #D34B4B;
+    --color-reject-dark: #b72c2c;
+    --color-success: #31c970;
+    --color-primary: #2C64E1;
+    --color-primary-dark: #214daa;
+    --color-primary-light: #F2F8FF;
+    --color-secondary: #86898D;
+
+    --color-dark: rgb(2, 3, 20);
+    --color-brightdark: #314321;
+
+    --alert-success: #192038;
+    --alert-success-bright: #2f3c6a;
+    // --alert-success-light: #263055;
+
+    --surface-bright: #fafafa;
+    --surface-light: #f9f9f9;
+    --surface-background: #F4F5F8;
+
+    --border-radius: 4px;
+    --border-radius-2: 8px;
+    --border-radius-3: 12px;
+    --border-radius-4: 16px;
+
+    --p-1: 12px;
+    --p-2: 18px;
+    --p-3: 24px;
+    --p-4: 30px;
+}
