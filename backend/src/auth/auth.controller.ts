@@ -1,10 +1,12 @@
-import { Controller, Request, Post, UseGuards, Get, UsePipes, ValidationPipe, Body, Res } from '@nestjs/common';
+import { Controller, Request, Post, UseGuards, Get, UsePipes, ValidationPipe, Body, Res, Req } from '@nestjs/common';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { AuthService } from './auth.service';
 import { Public } from './auth.decorator';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { response } from 'express';
 import { CreateForgotPasswordDto } from './dto/create-forgot-password.dto';
+import { VerifyPasswordResetDto } from './dto/verify-password-reset.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -65,9 +67,15 @@ export class AuthController {
     }
 
     @Public()
+    @Post('forgot-password-verify')
+    async forgotPasswordVerify(@Body() verifyPasswordResetDto: VerifyPasswordResetDto) {
+        return this.authService.forgotPasswordVerify(verifyPasswordResetDto);
+    }
+
+    @Public()
     @Post('reset-password')
-    async resetPassword() {
-        return this.authService.resetPassword();
+    async resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
+        return this.authService.resetPassword(resetPasswordDto);
     }
 
     setTokenCookie(res, refreshToken) {

@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
 import * as bcrypt from 'bcrypt';
@@ -10,6 +10,8 @@ import { UserDocument } from '../schemas/user.schema';
 import { CreateForgotPasswordDto } from './dto/create-forgot-password.dto';
 import { ForgottenPasswordDocument } from '../schemas/forgottenPassword.schema';
 import { MailService } from '../mail/mail.service';
+import { VerifyPasswordResetDto } from './dto/verify-password-reset.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 
 @Injectable()
 export class AuthService {
@@ -25,7 +27,7 @@ export class AuthService {
     async validateUser(email: string, pass: string): Promise<any> {
         const user = await this.usersService.findOne(email);          
 
-        if (user && this.comparePassword(pass, user)) {
+        if (user && await this.comparePassword(pass, user)) {            
             const { password, ...result } = user;
             return result;
         }
@@ -41,21 +43,6 @@ export class AuthService {
         }
 
         return null;
-    }
-
-    async passwordHash(pass: string): Promise<string> {
-        const salt = await bcrypt.genSalt(12);
-        return await bcrypt.hash(pass, salt);
-    }
-
-    private async comparePassword(providedPassword: string, user) {   
-        const isMatch = await bcrypt.compare(providedPassword, user.password);
-
-        if (!isMatch) {
-            throw new UnauthorizedException("Passwords not match");
-        }
-
-        return true;
     }
 
     async login(user: any) {
@@ -170,11 +157,67 @@ export class AuthService {
         }
     }
 
-    async resetPassword() {
+    async forgotPasswordVerify(verifyPasswordResetDto: VerifyPasswordResetDto) {
+        // return verifyPasswordResetDto.token;
+        const { token } = verifyPasswordResetDto;
 
+        // Check if given token exists in database
+        const forgottenPasswordRecord = await this.forgottenPaswordModel.findOne({ token });
+
+        // Check if received record from db is valid and if token expired
+        if (!forgottenPasswordRecord || forgottenPasswordRecord.isExpired) {
+            throw new BadRequestException('Bad request - invalid password reset token');
+        }
+
+        return {
+            email: forgottenPasswordRecord.email
+        }
+    }
+
+    async resetPassword(resetPasswordDto: ResetPasswordDto) {
+
+        const { email, token, password } = resetPasswordDto;
+
+        // Check if given token exists in database
+        const forgottenPasswordRecord = await this.forgottenPaswordModel.findOne({ token });
+
+        // Check if received record from db is valid and if token expired
+        if (!forgottenPasswordRecord || forgottenPasswordRecord.isExpired) {
+            throw new BadRequestException('Bad request - invalid password reset token');
+        }
+
+        // Remove record in database with given token
+        forgottenPasswordRecord.deleteOne();
+
+        // Find user with given email
+        const user = await this.userModel.findOne({ email });
+
+        // Change user password in database
+        user.password = await this.passwordHash(password);
+
+        user.save();
+
+        return {
+            message: 'Password successfully changed.'
+        }
     }
 
     // Methods - - - - - -  Methods - - - - - -  Methods - - - - - -  Methods - - - - - -  Methods - - - - - - 
+    
+    async passwordHash(pass: string): Promise<string> {
+        const salt = await bcrypt.genSalt(12);
+        return await bcrypt.hash(pass, salt);
+    }
+
+    private async comparePassword(providedPassword: string, user) {   
+        const isMatch = await bcrypt.compare(providedPassword, user.password);
+
+        if (!isMatch) {
+            return false;
+        }
+
+        return true;
+    }
 
     //* Retrieve refresh token from database
     async getRefreshToken(token) {        

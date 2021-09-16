@@ -15,6 +15,8 @@ export class ForgottenPassword {
 
     @Prop({ default: new Date() })
     createdAt: Date;
+
+    isExpired;
 }
 
 const ForgottenPasswordSchema = SchemaFactory.createForClass(ForgottenPassword);
