@@ -64,6 +64,12 @@ export class AuthController {
         return this.authService.forgotPassword(createForgotPassword);
     }
 
+    @Public()
+    @Post('reset-password')
+    async resetPassword() {
+        return this.authService.resetPassword();
+    }
+
     setTokenCookie(res, refreshToken) {
         res.cookie("refreshtoken", refreshToken, {
             expiresIn: "30d",

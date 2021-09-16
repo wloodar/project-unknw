@@ -153,7 +153,7 @@ export class AuthService {
             { upsert: true, new: true }
         );
 
-        // Theow internal server error when data isnt retreived from database
+        // Throw internal server error when data isnt retreived from database
         if (!forgottenPasswordModel) {
             throw new InternalServerErrorException();
         }
@@ -168,6 +168,10 @@ export class AuthService {
         return {
             message: "Check your inbox for password reset message."
         }
+    }
+
+    async resetPassword() {
+
     }
 
     // Methods - - - - - -  Methods - - - - - -  Methods - - - - - -  Methods - - - - - -  Methods - - - - - - 
