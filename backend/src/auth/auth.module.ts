@@ -10,6 +10,7 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 import { MongooseModule } from '@nestjs/mongoose';
 import { RefreshToken, RefreshTokenSchema } from '../schemas/refreshToken.schema';
 import { User, UserSchema } from '../schemas/user.schema';
+import { ForgottenPassword, ForgottenPasswordSchema } from '../schemas/forgottenPassword.schema';
 
 @Module({
     imports: [
@@ -20,8 +21,11 @@ import { User, UserSchema } from '../schemas/user.schema';
             secret: process.env.JWT_SECRET,
             signOptions: { expiresIn: '60s' },
         }),
-        MongooseModule.forFeature([{ name: RefreshToken.name, schema: RefreshTokenSchema }]),
-        MongooseModule.forFeature([{ name: User.name, schema: UserSchema }])
+        MongooseModule.forFeature([
+            { name: User.name, schema: UserSchema },
+            { name: RefreshToken.name, schema: RefreshTokenSchema },
+            { name: ForgottenPassword.name, schema: ForgottenPasswordSchema }
+        ])
     ],
     controllers: [AuthController],
     exports: [AuthService],

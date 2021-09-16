@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
 import * as bcrypt from 'bcrypt';
@@ -7,14 +7,19 @@ import { Model } from 'mongoose';
 import { randomBytes } from 'crypto';
 import { RefreshTokenDocument } from '../schemas/refreshToken.schema';
 import { UserDocument } from '../schemas/user.schema';
+import { CreateForgotPasswordDto } from './dto/create-forgot-password.dto';
+import { ForgottenPasswordDocument } from '../schemas/forgottenPassword.schema';
+import { MailService } from '../mail/mail.service';
 
 @Injectable()
 export class AuthService {
     constructor(
-        @InjectModel('RefreshToken') private refreshTokenModel: Model<RefreshTokenDocument>,
         @InjectModel('User') private userModel: Model<UserDocument>,
+        @InjectModel('RefreshToken') private refreshTokenModel: Model<RefreshTokenDocument>,
+        @InjectModel('ForgottenPassword') private forgottenPaswordModel: Model<ForgottenPasswordDocument>,
         private usersService: UsersService,
-        private jwtService: JwtService
+        private jwtService: JwtService,
+        private mailService: MailService
     ) {}
 
     async validateUser(email: string, pass: string): Promise<any> {
@@ -125,8 +130,44 @@ export class AuthService {
         return true;
     }
 
-    async forgotPassword(email) {
+    async forgotPassword(createForgotPasswordDto: CreateForgotPasswordDto) {
+        // Check if user with provided email exists
+        const user = await this.usersService.findOne(createForgotPasswordDto.email);
+
+        // if user with provided email don't exist, show success message without saving and sending mail
+        if (!user) {
+            return "Wiadomość została wysłana";
+        }
         
+        // Generate token for password reseting
+        const token = await randomBytes(64).toString('hex');
+
+        // Update / Create Entry in database with new data of password reseting operation
+        const forgottenPasswordModel = await this.forgottenPaswordModel.findOneAndUpdate(
+            { email: user.email },
+            {
+                email: user.email,
+                token: token,
+                createdAt: new Date()
+            },
+            { upsert: true, new: true }
+        );
+
+        // Theow internal server error when data isnt retreived from database
+        if (!forgottenPasswordModel) {
+            throw new InternalServerErrorException();
+        }
+
+        const mail = await this.mailService.sendForgottenPassword(user.email, "Password Reset", token);
+
+        // TODO: custom error handler
+        if (!mail) {
+            throw new InternalServerErrorException(); 
+        }
+
+        return {
+            message: "Check your inbox for password reset message."
+        }
     }
 
     // Methods - - - - - -  Methods - - - - - -  Methods - - - - - -  Methods - - - - - -  Methods - - - - - - 

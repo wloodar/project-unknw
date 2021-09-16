@@ -4,6 +4,7 @@ import { AuthService } from './auth.service';
 import { Public } from './auth.decorator';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { response } from 'express';
+import { CreateForgotPasswordDto } from './dto/create-forgot-password.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -55,6 +56,12 @@ export class AuthController {
         return {
             message: "Token revoked"
         }
+    }
+
+    @Public()
+    @Post('forgot-password')
+    async forgotPassword(@Body(ValidationPipe) createForgotPassword: CreateForgotPasswordDto) {
+        return this.authService.forgotPassword(createForgotPassword);
     }
 
     setTokenCookie(res, refreshToken) {
