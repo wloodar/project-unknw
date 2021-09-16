@@ -5,6 +5,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { UsersModule } from './users/users.module';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
+import { MailModule } from './mail/mail.module';
 
 @Module({
   imports: [
@@ -14,7 +15,8 @@ import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
     }),
     MongooseModule.forRoot(`mongodb+srv://unknw-nestjs-app:${process.env.MONGODB_PASS.toString()}@unknwcluster0.9igmn.mongodb.net/Main?retryWrites=true&w=majority`),
     AuthModule,
-    UsersModule
+    UsersModule,
+    MailModule
   ],
   providers: [
       {
