@@ -125,6 +125,10 @@ export class AuthService {
         return true;
     }
 
+    async forgotPassword(email) {
+        
+    }
+
     // Methods - - - - - -  Methods - - - - - -  Methods - - - - - -  Methods - - - - - -  Methods - - - - - - 
 
     //* Retrieve refresh token from database
